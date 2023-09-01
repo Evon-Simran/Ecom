@@ -169,13 +169,13 @@ const ProductList = () => {
 
     const addToCart = (item) => {
         alert(` ${item.title} added to Cart `)
-        setCart([...cart, item]);
+        setCart([...cart, {...item , quantity : 1}]);
     }
 
     return (
         <>
             <Header count={cart.length} showCart={showCart}/>
-            <CartList cart={cart} />
+            <CartList cart={cart}/>
             <ProductCard products={products} addToCart={addToCart} />
         </>
     )

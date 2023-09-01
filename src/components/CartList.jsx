@@ -1,29 +1,25 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Card';
 import EmptyCart from './EmptyCart';
 
 const CartList = ({ cart }) => {
-    const [quantity, setQuantity] = useState(1);
+    const [CART, setCART] = useState([]);
 
-    const handleDecrement = () => {
-        if (quantity == 1) {
-            alert("Quantity can't be below 1")
-        } else {
-            setQuantity(quantity - 1)
-        }
-    }
+    useEffect(() => {
+        setCART(cart)
+    }, [cart])
 
-    const handleIncrement = () => {
-        setQuantity(quantity + 1)
+    const decrement = (event) => {
+        alert("Hello")
     }
     return (
         <>
             <Container>
                 {
-                    cart && cart.length > 0 ?
-                        cart.map((cartItem, cartIndex) => {
+                    CART && CART.length > 0 ?
+                        CART.map((cartItem, cartIndex) => {
                             return (
                                 <>
                                     <Card style={{ margin: '2rem 0' }} key={cartIndex} className='d-flex flex-row text-secondary'>
@@ -34,17 +30,32 @@ const CartList = ({ cart }) => {
                                             <div className="details">
                                                 <Card.Title style={{ fontSize: '16px' }}>{cartItem.title}</Card.Title>
                                                 <div className="d-flex align-items-center quantity">
-                                                    <Button className='btn text-primary' onClick={handleDecrement} >-</Button>
-                                                    <div className='input-group-text' style={{ margin: '0 0.2rem' }}>{quantity}</div>
-                                                    <Button className='btn text-primary' onClick={handleIncrement}>+</Button>
+                                                    <Button className='btn text-primary' id='decrement' onClick={() => {
+                                                        const _CART = CART.map((item, index) => {
+                                                            if (item.quantity > 1) {
+                                                                return cartIndex === index ? { ...item, quantity: item.quantity - 1 } : item
+                                                            } else (item.quantity == 1)
+                                                            {
+                                                                return cartIndex == 1 ? { ...item, quantity: 1 } : item
+                                                            }
+                                                        })
+                                                        setCART(_CART)
+                                                    }}>-</Button>
+                                                    <div className='input-group-text' style={{ margin: '0 0.2rem' }}>{cartItem.quantity}</div>
+                                                    <Button className='btn text-primary' onClick={() => {
+                                                        const _CART = CART.map((item, index) => {
+                                                            return cartIndex === index ? { ...item, quantity: item.quantity + 1 } : item
+                                                        })
+                                                        setCART(_CART)
+                                                    }}>+</Button>
                                                 </div>
                                                 <Card.Text style={{ fontSize: '14px' }}>
-                                                    ₹ {cartItem.price}
+                                                    ₹ {parseFloat(cartItem.price * cartItem.quantity).toFixed(2)}
                                                 </Card.Text>
                                             </div>
                                         </Card.Body>
                                         <Card.Body className='d-flex flex-row align-items-center'>
-                                           <Button className='btn btn-primary'>Delete</Button>
+                                            <Button className='btn btn-primary'>Delete</Button>
                                         </Card.Body>
                                     </Card>
                                 </>
@@ -60,7 +71,7 @@ const CartList = ({ cart }) => {
                         <Card.Text>
                             Total : ₹
                             {
-                                cart.map(item => item.price * quantity).reduce((total, value) => total + value, 0)
+                                CART.map(item => item.price * item.quantity).reduce((total, value) => parseFloat(total + value).toFixed(2), 0)
                             }
                         </Card.Text>
                     </Card.Body>
